@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>2025 来自Kang的特别礼物</title>
+
+<style>
+  body {
+    margin: 0;
+    background: #0b0b0b;
+    overflow: hidden;
+    font-family: "Arial", sans-serif;
+  }
+
+  /* 欢迎页 */
+  #welcome {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: url('https://images.unsplash.com/photo-1543589077-47d81606c1bf?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-shadow: 0 0 12px rgba(0,0,0,0.8);
+    z-index: 9999;
+    animation: fadeIn 1.5s ease-out;
+  }
+
+  #welcome h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    animation: slideDown 1.5s ease-out;
+  }
+
+  #welcome p {
+    font-size: 22px;
+    margin-bottom: 40px;
+    animation: fadeIn 2.5s ease-out;
+  }
+
+  #start-btn {
+    padding: 15px 35px;
+    font-size: 20px;
+    background: #ff2e63;
+    color: white;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(255,46,99,0.6);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideDown {
+    from { transform: translateY(-40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+
+  /* 轮播容器 */
+  #slideshow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* 照片外框（自动适应屏幕） */
+.photo-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  width: 90vw;        /* 最大宽度为屏幕宽度的 90% */
+  max-width: 900px;   /* 大屏时限制最大宽度 */
+  height: auto;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 10px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.15);
+  box-shadow: 0 0 25px rgba(255,255,255,0.4);
+  backdrop-filter: blur(4px);
+
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+}
+
+/* 照片本体（保持比例 + 自动缩小） */
+.photo-frame img {
+  width: 100%;
+  height: auto;
+  max-height: 70vh;   /* 高度最多占屏幕 70% */
+  object-fit: contain; /* 保证不裁切、不变形 */
+  border-radius: 15px;
+}
+
+
+  /* 雪花效果 */
+  #snow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    display: none;
+  }
+</style>
+
+</head>
+<body>
+
+<!-- 背景音乐 -->
+<audio id="bgm" autoplay muted loop>
+  <source src="%E5%BC%A0%E8%8A%B8%E4%BA%AC%20-%20%E5%81%8F%E7%88%B1.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 欢迎页 -->
+<div id="welcome">
+  <h1>🎄 Kang & Flora 🎄</h1>
+  <p>欢迎来到 2025 Flora的特别礼物</p>
+  <div id="start-btn">请点击我，开始吧</div>
+</div>
+
+<!-- 雪花效果 -->
+<canvas id="snow"></canvas>
+
+<!-- 轮播容器 -->
+<div id="slideshow">
+  <div class="photo-frame"><img src="Kang%20und%20Flora_01.jpg"></div>
+  <div class="photo-frame"><img src="Kang%20und%20Flora_02.jpg"></div>
+  <div class="photo-frame"><img src="Kang%20und%20Flora_03.jpg"></div>
+  <div class="photo-frame"><img src="Kang%20und%20Flora_04.JPG"></div>
+  <div class="photo-frame"><img src="Kang%20und%20Flora_05.jpg"></div>
+  <div class="photo-frame"><img src="Kang%20und%20Flora_06.jpg"></div>
+  <div class="photo-frame"><img src="Kang%20und%20Flora_07.jpg"></div>
+  <div class="photo-frame"><img src="Kang%20und%20Flora_08.jpg"></div>
+  <div class="photo-frame"><img src="Kang%20und%20Flora_09.jpg"></div>
+  <div class="photo-frame"><img src="Kang%20und%20Flora_10.jpg"></div>
+</div>
+
+<script>
+  const audio = document.getElementById('bgm');
+  const welcome = document.getElementById('welcome');
+  const slideshow = document.getElementById('slideshow');
+  const snowCanvas = document.getElementById('snow');
+  const ctx = snowCanvas.getContext('2d');
+
+  // 点击开始
+  document.getElementById('start-btn').addEventListener('click', () => {
+    welcome.style.display = 'none';
+    slideshow.style.display = 'flex';
+    snowCanvas.style.display = 'block';
+
+    audio.muted = false;
+    audio.play();
+  });
+
+  // 轮播逻辑
+  let index = 0;
+  const frames = document.querySelectorAll('.photo-frame');
+
+  function showNext() {
+    frames.forEach((frame, i) => {
+      frame.style.opacity = (i === index) ? 1 : 0;
+    });
+    index = (index + 1) % frames.length;
+  }
+
+  showNext();
+  setInterval(showNext, 4000);
+
+  // 雪花效果
+  function resize() {
+    snowCanvas.width = window.innerWidth;
+    snowCanvas.height = window.innerHeight;
+  }
+  resize();
+  window.onresize = resize;
+
+  const snowflakes = [];
+  for (let i = 0; i < 120; i++) {
+    snowflakes.push({
+      x: Math.random() * snowCanvas.width,
+      y: Math.random() * snowCanvas.height,
+      r: Math.random() * 3 + 1,
+      d: Math.random() + 1
+    });
+  }
+
+  function drawSnow() {
+    ctx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    for (let flake of snowflakes) {
+      ctx.moveTo(flake.x, flake.y);
+      ctx.arc(flake.x, flake.y, flake.r, 0, Math.PI * 2);
+    }
+    ctx.fill();
+    updateSnow();
+  }
+
+  function updateSnow() {
+    for (let flake of snowflakes) {
+      flake.y += flake.d;
+      if (flake.y > snowCanvas.height) {
+        flake.y = 0;
+        flake.x = Math.random() * snowCanvas.width;
+      }
+    }
+  }
+
+  setInterval(drawSnow, 33);
+</script>
+
+</body>
+</html>
